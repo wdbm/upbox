@@ -1,10 +1,12 @@
-# upbox
+![](https://raw.githubusercontent.com/wdbm/upbox/master/media/upbox.png)
 
 Flask text-entry service and database system
 
 # introduction
 
 Upbox is a text-entry web program. Text and an optional comment is entered and then these are saved to a database.
+
+![](https://raw.githubusercontent.com/wdbm/upbox/master/media/screenshot.png)
 
 # setup
 
