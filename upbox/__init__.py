@@ -27,7 +27,7 @@
 # more details.                                                                #
 #                                                                              #
 # For a copy of the GNU General Public License, see                            #
-# <http://www.gnu.org/licenses/>.                                              #
+# <http://www.gnu.org/licenses>.                                               #
 #                                                                              #
 ################################################################################
 
@@ -35,12 +35,16 @@ usage:
     program [options]
 
 options:
-    -h, --help             display help message
-    --version              display version and exit
-    --database=FILENAME    database                                   [default: upbox.db]
-    --home=TEXT            home URL                                   [default: home.html]
-    --redirect_HTTPS=BOOL  direct loaded HTTP URLS to HTTPS versions  [default: true]
-    --logfile=FILENAME     log filename                               [default: upbox.log]
+    -h, --help                   display help message
+    --version                    display version and exit
+    --database=FILENAME          database                                   [default: upbox.db]
+    --home=TEXT                  home URL                                   [default: home.html]
+    --redirect_HTTPS=BOOL        direct loaded HTTP URLS to HTTPS versions  [default: true]
+    --logfile=FILENAME           log filename                               [default: upbox.log]
+    --message_instructions=TEXT  instructions message                       [default: Enter input text to process:]
+    --message_footer=TEXT        instructions message                       [default: This site records some details of connections to it for analysis and cracking prevention. It does not actively seek to record personal data (beyond I.P. addresses and the like). By using this site you agree to this recording.]
+    --host=HOST                  host (e.g. 0.0.0.0)                        [default: 0.0.0.0]
+    --port=PORT                  host (e.g. 80, 443)                        [default: 1337]
 '''
 
 import base64
@@ -65,7 +69,7 @@ from flask import (
 import technicolor
 
 name        = 'upbox'
-__version__ = '2022-01-19T0329Z'
+__version__ = '2022-01-19T2245Z'
 
 log = logging.getLogger(name)
 log.addHandler(technicolor.ColorisingStreamHandler())
@@ -80,11 +84,19 @@ def WSGI(argv=[]):
   options = docopt.docopt(__doc__, argv=argv)
   global filename_database
   global home_URL
+  global message_instructions
+  global message_footer
   global redirect_HTTPS
-  filename_database = options['--database']
-  home_URL          = options['--home']
-  filename_log      = options['--logfile']
-  redirect_HTTPS    = options['--redirect_HTTPS'].lower() == 'true'
+  global host
+  global port
+  filename_database    = options['--database']
+  home_URL             = options['--home']
+  filename_log         = options['--logfile']
+  message_instructions = options['--message_instructions']
+  message_footer       = options['--message_footer']
+  redirect_HTTPS       = options['--redirect_HTTPS'].lower() == 'true'
+  host                 = options['--host']
+  port                 = options['--port']
   ensure_database(filename=filename_database)
   return app
 
@@ -96,16 +108,23 @@ def main():
     exit()
   global filename_database
   global home_URL
+  global message_instructions
+  global message_footer
   global redirect_HTTPS
-  filename_database = options['--database']
-  home_URL          = options['--home']
-  filename_log      = options['--logfile']
-  redirect_HTTPS    = options['--redirect_HTTPS'].lower() == 'true'
+  global host
+  global port
+  filename_database    = options['--database']
+  home_URL             = options['--home']
+  filename_log         = options['--logfile']
+  message_instructions = options['--message_instructions']
+  message_footer       = options['--message_footer']
+  redirect_HTTPS       = options['--redirect_HTTPS'].lower() == 'true'
+  host                 = options['--host']
+  port                 = options['--port']
   ensure_database(filename=filename_database)
   app.run(
-    host     = '0.0.0.0',
-    #port     = 80,
-    port     = 443,
+    host     = host,
+    port     = port,
     debug    = False,
     threaded = True
   )
@@ -122,7 +141,7 @@ def create_database(filename='upbox.db'):
 
 def access_database(filename='upbox.db'):
   log.info('access database {filename}')
-  database = dataset.connect('sqlite:///{filename}')
+  database = dataset.connect(f'sqlite:///{filename}')
   return database
 
 @app.route('/')
@@ -162,7 +181,7 @@ def home():
         )
       )
       return render_template(home_URL, message=f'saved input with unique ID {unique_ID}')
-    return render_template('home.html')
+    return render_template('home.html', message_instructions=message_instructions, message_footer=message_footer)
   except:
     log.error('error')
     return render_template(home_URL, message='error')

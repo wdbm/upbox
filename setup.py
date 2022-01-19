@@ -7,7 +7,7 @@ import setuptools
 def main():
   setuptools.setup(
     name                 = 'upbox',
-    version              = '2022.01.19.0329',
+    version              = '2022.01.19.2245',
     description          = 'uploading website and database system',
     long_description     = long_description(),
     url                  = 'https://github.com/wdbm/upbox',
