@@ -69,7 +69,7 @@ from flask import (
 import technicolor
 
 name        = 'upbox'
-__version__ = '2022-01-19T2245Z'
+__version__ = '2022-01-20T0210Z'
 
 log = logging.getLogger(name)
 log.addHandler(technicolor.ColorisingStreamHandler())
@@ -130,17 +130,17 @@ def main():
   )
   sys.exit()
 
-def ensure_database(filename='upbox.db'):
+def ensure_database(filename=None):
   if not os.path.isfile(filename):
     log.info(f'database {filename} nonexistent; creating database')
     create_database(filename=filename)
 
-def create_database(filename='upbox.db'):
+def create_database(filename=None):
   log.info(f'create database {filename}')
   os.system(f'sqlite3 {filename} "create table aTable(field1 int); drop table aTable;"')
 
-def access_database(filename='upbox.db'):
-  log.info('access database {filename}')
+def access_database(filename=None):
+  log.info(f'access database {filename}')
   database = dataset.connect(f'sqlite:///{filename}')
   return database
 
